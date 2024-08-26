@@ -7,9 +7,6 @@ package functions
 
 import (
 	"fmt"
-
-	"github.com/dave/dst"
-
 	"github.com/Azure/azure-service-operator/v2/tools/generator/internal/astbuilder"
 	"github.com/Azure/azure-service-operator/v2/tools/generator/internal/astmodel"
 )
@@ -23,18 +20,16 @@ func NewGetAPIVersionFunction(
 	idFactory astmodel.IdentifierFactory,
 ) astmodel.Function {
 	comment := fmt.Sprintf("returns the ARM API version of the resource. This is always %s", apiVersionEnumValue.Value)
-	value := dst.NewIdent(
-		astmodel.GetEnumValueId(apiVersionTypeName.Name(), apiVersionEnumValue))
 
+	value := astbuilder.TextLiteral(apiVersionEnumValue.Value)
 	result := NewObjectFunction(GetAPIVersionFunctionName, idFactory,
 		createBodyReturningValue(
-			astbuilder.CallFunc("string", value),
+			value,
 			astmodel.StringType,
 			comment,
 			ReceiverTypeStruct))
 
 	result.AddPackageReference(astmodel.GenRuntimeReference)
-	result.AddReferencedTypes(apiVersionTypeName)
 
 	return result
 }
